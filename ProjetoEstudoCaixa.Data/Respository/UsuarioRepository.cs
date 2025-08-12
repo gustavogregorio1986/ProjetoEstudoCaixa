@@ -1,4 +1,5 @@
-﻿using ProjetoEstudoCaixa.Data.Respository.Interface;
+﻿using ProjetoEstudoCaixa.Data.Context;
+using ProjetoEstudoCaixa.Data.Respository.Interface;
 using ProjetoEstudoCaixa.Dominio.Dominio;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,18 @@ namespace ProjetoEstudoCaixa.Data.Respository
 {
     public class UsuarioRepository : IUsuarioRepository
     {
-        public Task<Usuario> AdicionarUsuario(Usuario usuario)
+        private readonly CaixaContext _context;
+
+        public UsuarioRepository(CaixaContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task<Usuario> AdicionarUsuario(Usuario usuario)
+        {
+            var usaurioCriado = await _context.AddAsync(usuario);
+            await _context.SaveChangesAsync();
+            return usaurioCriado.Entity;
         }
     }
 }

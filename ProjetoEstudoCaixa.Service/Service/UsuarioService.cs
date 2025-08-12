@@ -1,4 +1,5 @@
-﻿using ProjetoEstudoCaixa.Dominio.Dominio;
+﻿using ProjetoEstudoCaixa.Data.Respository.Interface;
+using ProjetoEstudoCaixa.Dominio.Dominio;
 using ProjetoEstudoCaixa.Service.Service.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,16 @@ namespace ProjetoEstudoCaixa.Service.Service
 {
     public class UsuarioService : IUsuarioService
     {
-        public Task<Usuario> AdicionarUsuario(Usuario usuario)
+        private readonly IUsuarioRepository _usuarioRepository;
+
+        public UsuarioService(IUsuarioRepository usuarioRepository)
         {
-            throw new NotImplementedException();
+            _usuarioRepository = usuarioRepository;
+        }
+
+        public async Task<Usuario> AdicionarUsuario(Usuario usuario)
+        {
+            return await _usuarioRepository.AdicionarUsuario(usuario);
         }
     }
 }
