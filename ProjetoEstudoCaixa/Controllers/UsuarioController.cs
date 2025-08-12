@@ -20,20 +20,24 @@ namespace ProjetoEstudoCaixa.Controllers
               _mapper = mapper;
           }
 
-          [HttpPost]
-          [Route("AdicionarUsuario")]
-          public async Task<IActionResult> AdicionarUsuario([FromBody]UsuarioDTO usuarioDTO)
-          {
-              if (usuarioDTO == null)
-                BadRequest("Usuário não pode ser nulo.");
+        [HttpPost]
+        [Route("AdicionarUsuario")]
+        public async Task<IActionResult> AdicionarUsuario([FromBody] UsuarioDTO usuarioDTO)
+        {
+            if (usuarioDTO == null)
+                return BadRequest("Usuário não pode ser nulo.");
 
-               var usuario = _mapper.Map<Usuario>(usuarioDTO);
+            var senhaHash = Service.Criptografia.PasswordHelper.HashPassword(usuarioDTO.Senha);
+            usuarioDTO.Senha = senhaHash;
 
-              var usuarioCriado = await _usuarioService.AdicionarUsuario(usuario);
+            var usuario = _mapper.Map<Usuario>(usuarioDTO);
 
-              var usuarioRetorno = _mapper.Map<UsuarioDTO>(usuarioCriado);
+            var usuarioCriado = await _usuarioService.AdicionarUsuario(usuario);
 
-              return Ok(usuarioRetorno);
-          }
+            var usuarioRetorno = _mapper.Map<UsuarioDTO>(usuarioCriado);
+
+            return Ok(usuarioRetorno);
+        }
+
     }
 }
