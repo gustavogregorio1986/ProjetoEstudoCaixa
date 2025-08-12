@@ -8,7 +8,7 @@ namespace ProjetoEstudoCaixa.Dominio.Enum
 {
     public enum EnumPerfil
     {
-        Adm,
-        Cliente
+        Adm = 1,
+        Cliente = 2
     }
 }

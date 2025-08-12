@@ -31,8 +31,4 @@
     <ProjectReference Include="..\ProjetoEstudoCaixa.Service\ProjetoEstudoCaixa.Service.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
