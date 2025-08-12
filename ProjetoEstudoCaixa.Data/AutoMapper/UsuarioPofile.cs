@@ -14,6 +14,7 @@ namespace ProjetoEstudoCaixa.Data.AutoMapper
         public UsuarioPofile()
         {
             CreateMap<Usuario, UsuarioDTO>();
+            CreateMap<UsuarioDTO, Usuario>();
         }
     }
 }
