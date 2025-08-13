@@ -7,6 +7,18 @@ using ProjetoEstudoCaixa.Service.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1 - Definir uma política de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MinhaPoliticaCors",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // front-end que vai acessar a API
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -29,6 +41,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// 2 - Usar o middleware CORS
+app.UseCors("MinhaPoliticaCors");
 
 app.UseHttpsRedirection();
 
