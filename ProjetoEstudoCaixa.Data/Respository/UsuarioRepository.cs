@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ProjetoEstudoCaixa.Data.Context;
 using ProjetoEstudoCaixa.Data.DTO;
 using ProjetoEstudoCaixa.Data.Respository.Interface;
@@ -23,9 +25,13 @@ namespace ProjetoEstudoCaixa.Data.Respository
 
         public async Task<Usuario> AdicionarUsuario(Usuario usuario)
         {
-            var usaurioCriado = await _context.AddAsync(usuario);
+            var passwordHasher = new PasswordHasher<Usuario>();
+            usuario.Senha = passwordHasher.HashPassword(usuario, usuario.Senha);
+
+            _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
-            return usaurioCriado.Entity;
+
+            return usuario;
         }
 
         public async Task<Usuario?> ObterPorEmailSenhaPerfil(string email, EnumPerfil perfil)

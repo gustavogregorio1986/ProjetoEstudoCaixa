@@ -33,17 +33,22 @@ namespace ProjetoEstudoCaixa.Controllers
             if (usuarioDTO == null)
                 return BadRequest("Usuário não pode ser nulo.");
 
-            var senhaHash = Service.Criptografia.PasswordHelper.HashPassword(usuarioDTO.Senha);
-            usuarioDTO.Senha = senhaHash;
+            // Cria hash da senha
+            usuarioDTO.Senha = Service.Criptografia.PasswordHelper.HashPassword(usuarioDTO.Senha);
 
+            // Mapeia DTO para entidade
             var usuario = _mapper.Map<Usuario>(usuarioDTO);
 
+            // Salva usuário no banco
             var usuarioCriado = await _usuarioService.AdicionarUsuario(usuario);
 
+            // Mapeia de volta para DTO (senha não será retornada por causa do [JsonIgnore])
             var usuarioRetorno = _mapper.Map<UsuarioDTO>(usuarioCriado);
 
             return Ok(usuarioRetorno);
         }
+
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UsuarioDTO usuarioLogin)
@@ -81,8 +86,6 @@ namespace ProjetoEstudoCaixa.Controllers
         }
 
     }
-
-
 
 }
 
