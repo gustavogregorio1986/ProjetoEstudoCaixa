@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjetoEstudoCaixa.Data.Context;
+using ProjetoEstudoCaixa.Data.DTO;
 using ProjetoEstudoCaixa.Data.Respository.Interface;
 using ProjetoEstudoCaixa.Dominio.Dominio;
 using ProjetoEstudoCaixa.Dominio.Enum;
@@ -27,13 +28,14 @@ namespace ProjetoEstudoCaixa.Data.Respository
             return usaurioCriado.Entity;
         }
 
-        public async Task<Usuario> ObterPorEmailSenhaPerfil(string email, string senha, EnumPerfil perfil)
+        public async Task<Usuario?> ObterPorEmailSenhaPerfil(string email, EnumPerfil perfil)
         {
             return await _context.Usuarios.FirstOrDefaultAsync(u =>
-                    u.Email == email &&
-                    u.Senha == senha &&
-                    u.Perfil == perfil
-             );
+             u.Email == email &&
+             u.Perfil == perfil
+         );
         }
+
+        
     }
 }

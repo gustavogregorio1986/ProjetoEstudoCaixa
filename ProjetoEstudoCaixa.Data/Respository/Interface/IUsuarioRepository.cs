@@ -1,4 +1,5 @@
-﻿using ProjetoEstudoCaixa.Dominio.Dominio;
+﻿using ProjetoEstudoCaixa.Data.DTO;
+using ProjetoEstudoCaixa.Dominio.Dominio;
 using ProjetoEstudoCaixa.Dominio.Enum;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,6 @@ namespace ProjetoEstudoCaixa.Data.Respository.Interface
     {
         Task<Usuario> AdicionarUsuario(Usuario usuario);
 
-        Task<Usuario> ObterPorEmailSenhaPerfil(string email, string senha, EnumPerfil perfil);
+        Task<Usuario?> ObterPorEmailSenhaPerfil(string email, EnumPerfil perfil);
     }  
 }

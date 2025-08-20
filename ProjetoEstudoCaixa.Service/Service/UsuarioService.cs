@@ -1,4 +1,5 @@
-﻿using ProjetoEstudoCaixa.Data.Respository.Interface;
+﻿using ProjetoEstudoCaixa.Data.DTO;
+using ProjetoEstudoCaixa.Data.Respository.Interface;
 using ProjetoEstudoCaixa.Dominio.Dominio;
 using ProjetoEstudoCaixa.Dominio.Enum;
 using ProjetoEstudoCaixa.Service.Service.Interface;
@@ -24,9 +25,9 @@ namespace ProjetoEstudoCaixa.Service.Service
             return await _usuarioRepository.AdicionarUsuario(usuario);
         }
 
-        public async Task<Usuario> ObterPorEmailSenhaPerfil(string email, string senha, EnumPerfil perfil)
+        public async Task<Usuario> ObterPorEmailSenhaPerfil(string email, EnumPerfil perfil)
         {
-            return await _usuarioRepository.ObterPorEmailSenhaPerfil(email, senha, perfil);
+           return await _usuarioRepository.ObterPorEmailSenhaPerfil(email, perfil);
         }
     }
 }

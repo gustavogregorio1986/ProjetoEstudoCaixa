@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProjetoEstudoCaixa.Data.DTO;
 using ProjetoEstudoCaixa.Dominio.Dominio;
+using ProjetoEstudoCaixa.Dominio.Enum;
+using ProjetoEstudoCaixa.Helper;
 using ProjetoEstudoCaixa.Service.Service.Interface;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ProjetoEstudoCaixa.Controllers
 {
@@ -13,12 +17,14 @@ namespace ProjetoEstudoCaixa.Controllers
     {
           private readonly IUsuarioService _usuarioService;
           private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
 
-          public UsuarioController(IUsuarioService usuarioService, IMapper mapper)
+        public UsuarioController(IUsuarioService usuarioService, IMapper mapper, IConfiguration config)
           {
               _usuarioService = usuarioService;
               _mapper = mapper;
-          }
+              _config = config;
+        }
 
         [HttpPost]
         [Route("AdicionarUsuario")]
@@ -39,5 +45,44 @@ namespace ProjetoEstudoCaixa.Controllers
             return Ok(usuarioRetorno);
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UsuarioDTO usuarioLogin)
+        {
+            if (usuarioLogin == null)
+                return BadRequest("Dados inválidos.");
+
+            var usuarioDb = await _usuarioService.ObterPorEmailSenhaPerfil(usuarioLogin.Email, (EnumPerfil)(int)usuarioLogin.Perfil);
+
+            if (usuarioDb == null)
+                return Unauthorized("Email ou perfil incorretos.");
+
+            // Verifica senha
+            var passwordHasher = new PasswordHasher<Usuario>();
+            var resultado = passwordHasher.VerifyHashedPassword(usuarioDb, usuarioDb.Senha, usuarioLogin.Senha);
+
+            if (resultado == PasswordVerificationResult.Success)
+            {
+                var token = JwtHelper.GerarToken(usuarioDb, _config);
+
+                return Ok(new
+                {
+                    mensagem = "Login realizado com sucesso!",
+                    token = token,
+                    usuario = new
+                    {
+                        usuarioDb.Id,
+                        usuarioDb.Email,
+                        usuarioDb.Perfil
+                    }
+                });
+            }
+
+            return Unauthorized("Senha incorreta.");
+        }
+
     }
+
+
+
 }
+
