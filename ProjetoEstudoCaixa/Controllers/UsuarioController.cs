@@ -26,59 +26,59 @@ namespace ProjetoEstudoCaixa.Controllers
               _config = config;
         }
 
-        [HttpPost]
-        [Route("AdicionarUsuario")]
-        public async Task<IActionResult> AdicionarUsuario([FromBody] UsuarioDTO usuarioDTO)
+        // Cadastro do usuário
+        [HttpPost("cadastrar")]
+        public async Task<IActionResult> Cadastrar([FromBody] UsuarioDTO usuarioDTO)
         {
             if (usuarioDTO == null)
-                return BadRequest("Usuário não pode ser nulo.");
+                return BadRequest("Dados inválidos.");
 
-            // Cria hash da senha
-            usuarioDTO.Senha = Service.Criptografia.PasswordHelper.HashPassword(usuarioDTO.Senha);
+            var usuario = new Usuario
+            {
+                Email = usuarioDTO.Email,
+                Perfil = usuarioDTO.Perfil
+            };
 
-            // Mapeia DTO para entidade
-            var usuario = _mapper.Map<Usuario>(usuarioDTO);
+            // Cria o hash da senha
+            var passwordHasher = new PasswordHasher<Usuario>();
+            usuario.Senha = passwordHasher.HashPassword(usuario, usuarioDTO.Senha);
 
-            // Salva usuário no banco
-            var usuarioCriado = await _usuarioService.AdicionarUsuario(usuario);
+            await _usuarioService.AdicionarUsuario(usuario);
 
-            // Mapeia de volta para DTO (senha não será retornada por causa do [JsonIgnore])
-            var usuarioRetorno = _mapper.Map<UsuarioDTO>(usuarioCriado);
-
-            return Ok(usuarioRetorno);
+            return Ok(new { mensagem = "Usuário cadastrado com sucesso!" });
         }
 
 
-
+        // Login do usuário
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UsuarioDTO usuarioLogin)
         {
             if (usuarioLogin == null)
                 return BadRequest("Dados inválidos.");
 
-            var usuarioDb = await _usuarioService.ObterPorEmailSenhaPerfil(usuarioLogin.Email, (EnumPerfil)(int)usuarioLogin.Perfil);
+            // Converte o perfil do DTO para EnumPerfil
+            if (!Enum.TryParse(usuarioLogin.Perfil.ToString(), out EnumPerfil perfil))
+                return BadRequest("Perfil inválido.");
 
+            // Busca usuário pelo email e perfil
+            var usuarioDb = await _usuarioService.ObterPorEmailSenhaPerfil(usuarioLogin.Email, perfil);
             if (usuarioDb == null)
                 return Unauthorized("Email ou perfil incorretos.");
 
-            // Verifica senha
+            // Verifica a senha
             var passwordHasher = new PasswordHasher<Usuario>();
-            var resultado = passwordHasher.VerifyHashedPassword(usuarioDb, usuarioDb.Senha, usuarioLogin.Senha);
+            var resultado = passwordHasher.VerifyHashedPassword(usuarioDb, usuarioDb.Senha, usuarioLogin.Senha.Trim());
 
-            if (resultado == PasswordVerificationResult.Success)
+            if (resultado == PasswordVerificationResult.Success ||
+                resultado == PasswordVerificationResult.SuccessRehashNeeded)
             {
                 var token = JwtHelper.GerarToken(usuarioDb, _config);
 
                 return Ok(new
                 {
                     mensagem = "Login realizado com sucesso!",
-                    token = token,
-                    usuario = new
-                    {
-                        usuarioDb.Id,
-                        usuarioDb.Email,
-                        usuarioDb.Perfil
-                    }
+                    token,
+                    usuario = new { usuarioDb.Id, usuarioDb.Email, usuarioDb.Perfil }
                 });
             }
 
