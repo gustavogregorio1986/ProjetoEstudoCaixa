@@ -27,8 +27,8 @@ namespace ProjetoEstudoCaixa.Controllers
         }
 
         // Cadastro do usuário
-        [HttpPost("cadastrar")]
-        public async Task<IActionResult> Cadastrar([FromBody] UsuarioDTO usuarioDTO)
+        [HttpPost("CadastrarUsuario")]
+        public async Task<IActionResult> CadastrarUsuario([FromBody] UsuarioDTO usuarioDTO)
         {
             if (usuarioDTO == null)
                 return BadRequest("Dados inválidos.");
@@ -50,8 +50,8 @@ namespace ProjetoEstudoCaixa.Controllers
 
 
         // Login do usuário
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UsuarioDTO usuarioLogin)
+        [HttpPost("LoginUsuario")]
+        public async Task<IActionResult> LoginUsuario([FromBody] UsuarioDTO usuarioLogin)
         {
             if (usuarioLogin == null)
                 return BadRequest("Dados inválidos.");
